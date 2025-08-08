@@ -165,53 +165,51 @@ public class UploadHistoryRepository : IUploadHistoryRepository
             await _context.SaveChangesAsync();
         }
     }
-    public async Task<FileDataEntity?> ObterArquivoCompleto(string processId, int pageNumber, int pageSize, string? searchTerm, Boolean? orderByName)
+public async Task<FileDataEntity?> ObterArquivoCompleto(string processId, int? pageNumber, int? pageSize)
+{
+    var fileData = await _context.FileData
+        .Include(fd => fd.FileDataEpisodes)
+        .FirstOrDefaultAsync(fd => fd.Id == processId);
+
+    if (fileData == null)
+        return null;
+
+    var fileDataEpisodeQuery = _context.FileDataEpisode
+        .Where(fde => fde.FileDataId == processId)
+        .Include(fde => fde.Episode)
+            .ThenInclude(ep => ep.CharacterEpisodes)
+                .ThenInclude(ce => ce.Character)
+                    .ThenInclude(c => c.Origin)
+        .Include(fde => fde.Episode)
+            .ThenInclude(ep => ep.CharacterEpisodes)
+                .ThenInclude(ce => ce.Character)
+                    .ThenInclude(c => c.Location)
+        .AsQueryable();
+
+    List<FileDataEpisodeModel> pagedFileDataEpisodes;
+    if (pageNumber.HasValue && pageSize.HasValue && pageNumber > 0 && pageSize > 0)
     {
-    var query = _context.FileData
-        .Include(fd => fd.FileDataEpisodes)
-            .ThenInclude(fde => fde.Episode)
-                .ThenInclude(ep => ep.CharacterEpisodes)
-                    .ThenInclude(ce => ce.Character)
-        .ThenInclude(c => c.Origin)
-        .Include(fd => fd.FileDataEpisodes)
-            .ThenInclude(fde => fde.Episode)
-                .ThenInclude(ep => ep.CharacterEpisodes)
-                    .ThenInclude(ce => ce.Character)
-        .ThenInclude(c => c.Location)
-        .Where(fd => fd.Id == processId);
-
-        var fileData = await query.FirstOrDefaultAsync();
-
-        if (fileData == null)
-            return null;
-
-        var episodes = fileData.FileDataEpisodes
-            .Select(fde => fde.Episode)
-            .AsQueryable();
-
-        if (!string.IsNullOrEmpty(searchTerm))
-        {
-            episodes = episodes
-                .Where(ep => ep.Name.Contains(searchTerm));
-        }
-
-        if (orderByName == true)
-            episodes = episodes.OrderByDescending(ep => ep.Name);
-        else
-            episodes = episodes.OrderBy(ep => ep.Name);
-
-        var pagedEpisodes = episodes
-            .Skip((pageNumber - 1) * pageSize)
-            .Take(pageSize)
-            .ToList();
-
-        fileData.FileDataEpisodes = fileData.FileDataEpisodes
-            .Where(fde => pagedEpisodes.Any(pe => pe.Id == fde.EpisodeId))
-            .ToList();
-
-        fileData.Episodes = pagedEpisodes;
-
-        return FileDataMapper.ToEntity(fileData);
+        pagedFileDataEpisodes = await fileDataEpisodeQuery
+            .Skip((pageNumber.Value - 1) * pageSize.Value)
+            .Take(pageSize.Value)
+            .ToListAsync();
     }
+    else
+    {
+        pagedFileDataEpisodes = await fileDataEpisodeQuery.ToListAsync();
+    }
+
+    var pagedEpisodes = pagedFileDataEpisodes
+        .Select(fde => fde.Episode)
+        .ToList();
+
+    fileData.Episodes = pagedEpisodes;
+
+    fileData.FileDataEpisodes = fileData.FileDataEpisodes
+        .Where(fde => pagedEpisodes.Any(pe => pe.Id == fde.EpisodeId))
+        .ToList();
+
+    return FileDataMapper.ToEntity(fileData);
+}
 
 }

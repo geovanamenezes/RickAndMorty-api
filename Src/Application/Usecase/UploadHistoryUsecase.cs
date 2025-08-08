@@ -87,8 +87,8 @@ public async Task<FileDataTO?> RetornaDadosArquivoCompleto(
     string? orderByName)
 
 {
-    var (validPage, validPageSize, orderByNameBool) = ValidaParametrosGetArquivo(pageNumber, pageSize, orderByName);
-    var entity = await uploadHistoryRepository.ObterArquivoCompleto(processId, validPage, validPageSize, searchTerm, orderByNameBool);
+    var (validPage, validPageSize) = ValidaParametrosGetArquivo(pageNumber, pageSize);
+    var entity = await uploadHistoryRepository.ObterArquivoCompleto(processId, validPage, validPageSize);
 
     if (entity == null)
         return null;
@@ -167,24 +167,17 @@ public async Task<FileDataTO?> RetornaDadosArquivoCompleto(
         };
     }
 
-    public static (int Page, int PageSize, bool OrderByName) ValidaParametrosGetArquivo(int? page, int? pageSize, string? orderByName)
+    public static (int? Page, int? PageSize) ValidaParametrosGetArquivo(int? page, int? pageSize)
     {
-        int validPage = page.HasValue && page > 0 ? page.Value : 1;
-        int validPageSize = pageSize.HasValue && pageSize > 0 ? pageSize.Value : 10;
+        bool pageValid = page.HasValue && page > 0;
+        bool pageSizeValid = pageSize.HasValue && pageSize > 0;
 
-        bool orderBy = false;
-        if (!string.IsNullOrEmpty(orderByName))
-        {
-            if (orderByName.ToLower() == "sim")
-            {
-                orderBy = true;
-            }
-            else if (orderByName.ToLower() != "nao")
-            {
-                throw new ArgumentException("Parâmetro 'orderByName' deve ser 'sim', 'nao' ou nulo.");
-            }
-        }
+        if (!pageValid && !pageSizeValid)
+            return (null, null);
 
-        return (validPage, validPageSize, orderBy);
+        int validPage = pageValid ? page.Value : 1;
+        int validPageSize = pageSizeValid ? pageSize.Value : 10;
+
+        return (validPage, validPageSize);
     }
 }

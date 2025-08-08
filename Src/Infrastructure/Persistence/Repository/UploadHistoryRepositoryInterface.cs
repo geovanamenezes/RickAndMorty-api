@@ -13,6 +13,6 @@ public interface IUploadHistoryRepository
     Task SalvarResumoArquivo(FileDataEntity fileData);
     Task SalvarRelacaoPersonagemEpisodio(List<CharacterEpisodeEntity> characterEpisodes);
     Task SalvarRelacaoArquivoEpisodio(List<FileDataEpisodeEntity> fileDataEpisodes);
-    Task<FileDataEntity?> ObterArquivoCompleto(string processId, int pageNumber, int pageSize, string? searchTerm, Boolean? orderByName);
+    Task<FileDataEntity?> ObterArquivoCompleto(string processId, int? pageNumber, int? pageSize);
 
 }
