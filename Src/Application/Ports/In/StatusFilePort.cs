@@ -1,6 +1,5 @@
-
 using UploadHistory.UsecaseInterface;
-
+using Correlation.Services;
 namespace Status.Ports;
 public static class UploadHistoryPorts
 {
@@ -8,8 +7,12 @@ public static class UploadHistoryPorts
     {
         app.MapGet("/status/{processId}", async (
             string processId,
-            IUploadHistory useCase) =>
+            IUploadHistory useCase,
+            ICorrelationService correlationService,
+            ILogger logger) =>
         {
+            correlationService.SetCorrelationId(Guid.Parse(processId));
+            logger.LogInformation($"Buscando status do arquivo: {processId}");
             var result = await useCase.BuscaStatusArquivo(processId);
             return Results.Ok(result);
         });

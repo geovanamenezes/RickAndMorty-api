@@ -1,6 +1,3 @@
-using ReceivedFile.Entity;
-using ReceivedFile.Model;
-
 public static class EpisodeMapper
 {
     public static EpisodeModel ToModel(EpisodeEntity entity)

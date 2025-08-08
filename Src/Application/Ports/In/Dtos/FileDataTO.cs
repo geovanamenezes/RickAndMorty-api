@@ -7,6 +7,5 @@ public class FileDataTO
     public int TotalMaleCharacters { get; set; }
     public int TotalGenderlessCharacters { get; set; }
     public int TotalGenderUnknownCharacters { get; set; }
-
     public List<EpisodeTO> Episodes { get; set; } = new();
 }

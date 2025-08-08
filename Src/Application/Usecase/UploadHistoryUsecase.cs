@@ -2,23 +2,34 @@ namespace UploadHistory.Usecase;
 using UploadHistory.UsecaseInterface;
 using UploadHistory.RepositoryInterface;
 using ReceivedFile.Entity;
-
+using Correlation.Services;
 
 public class UploadHistoryUseCase : IUploadHistory
 {
     private readonly IUploadHistoryRepository uploadHistoryRepository;
+    private readonly ILogger<UploadHistoryUseCase> logger;
+    private readonly ICorrelationService correlationService;
 
-    public UploadHistoryUseCase(IUploadHistoryRepository repository)
+    public UploadHistoryUseCase(IUploadHistoryRepository repository, ILogger<UploadHistoryUseCase> _logger, ICorrelationService _correlationService)
     {
         uploadHistoryRepository = repository;
+        logger = _logger;
+        correlationService = _correlationService;
     }
 
     public async Task<string> ProcessaArquivo(IFormFile file)
     {
+        logger.LogInformation($"Iniciando processamento do arquivo: {file.FileName}");
         var processId = Guid.NewGuid().ToString();
+
         await ValidarArquivo(file);
+        logger.LogInformation($"Arquivo {file.FileName} validado com sucesso.");
+
         SalvarArquivoFisico(file, processId);
+        logger.LogInformation($"Arquivo {file.FileName} salvo com sucesso no diretório.");
+
         await RegistrarArquivoRecebido(processId);
+        logger.LogInformation($"Arquivo {file.FileName} registrado com sucesso no base de dados.");
         return processId;
     }
     public async Task<ReceivedFileEntity?> BuscaStatusArquivo(string processId)
@@ -41,7 +52,10 @@ public class UploadHistoryUseCase : IUploadHistory
             var parts = line.Split(',');
 
             if (parts.Length < 4)
+            {
+                logger.LogError($"Linha {lineNumber} incompleta: {line}");
                 throw new InvalidDataException($"Linha {lineNumber} incompleta.");
+            }
 
             var registro = new ContentFileTO
             {
@@ -52,13 +66,19 @@ public class UploadHistoryUseCase : IUploadHistory
             };
 
             if (!registro.IsValid())
+            {
+                logger.LogError($"Linha {lineNumber} inválida: {line}");
                 throw new InvalidDataException($"Linha {lineNumber} inválida.");
+            }
 
             registros.Add(registro);
         }
 
         if (!registros.Any())
+        {
+            logger.LogError("Arquivo não possui registros válidos.");
             throw new InvalidDataException("Arquivo não possui registros válidos.");
+        }
 
         return registros;
     }
@@ -74,7 +94,8 @@ public class UploadHistoryUseCase : IUploadHistory
         return fileName;
     }
     private async Task RegistrarArquivoRecebido(string processId)
-    {
+    {   
+        logger.LogInformation($"Atualizando status do arquivo como RECEBIDO: {processId}");
         var uploadHistory = new ReceivedFileEntity("RECEBIDO", processId, DateTime.UtcNow);
         await uploadHistoryRepository.criaHistoricoArquivo(uploadHistory);
     }

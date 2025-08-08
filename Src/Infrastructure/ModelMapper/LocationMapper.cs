@@ -1,6 +1,3 @@
-using ReceivedFile.Entity;
-using ReceivedFile.Model;
-
 public static class LocationMapper
 {
     public static LocationModel ToModel(LocationEntity entity)

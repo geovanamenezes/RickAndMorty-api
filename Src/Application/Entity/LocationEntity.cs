@@ -1,4 +1,3 @@
-
 public class LocationEntity
 {
     public int Id { get; set; }

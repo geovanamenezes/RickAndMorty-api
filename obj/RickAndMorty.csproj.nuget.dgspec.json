@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\gimen\\OneDrive\\Documentos\\projetos\\rickandmorty\\RickAndMorty.csproj": {}
+    "C:\\Users\\gimen\\OneDrive\\Documentos\\projetos\\rickandmorty\\RickAndMorty.csproj": {}
   },
   "projects": {
-    "c:\\Users\\gimen\\OneDrive\\Documentos\\projetos\\rickandmorty\\RickAndMorty.csproj": {
+    "C:\\Users\\gimen\\OneDrive\\Documentos\\projetos\\rickandmorty\\RickAndMorty.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\gimen\\OneDrive\\Documentos\\projetos\\rickandmorty\\RickAndMorty.csproj",
+        "projectUniqueName": "C:\\Users\\gimen\\OneDrive\\Documentos\\projetos\\rickandmorty\\RickAndMorty.csproj",
         "projectName": "RickAndMorty",
-        "projectPath": "c:\\Users\\gimen\\OneDrive\\Documentos\\projetos\\rickandmorty\\RickAndMorty.csproj",
+        "projectPath": "C:\\Users\\gimen\\OneDrive\\Documentos\\projetos\\rickandmorty\\RickAndMorty.csproj",
         "packagesPath": "C:\\Users\\gimen\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\gimen\\OneDrive\\Documentos\\projetos\\rickandmorty\\obj\\",
+        "outputPath": "C:\\Users\\gimen\\OneDrive\\Documentos\\projetos\\rickandmorty\\obj\\",
         "projectStyle": "PackageReference",
         "configFilePaths": [
           "C:\\Users\\gimen\\AppData\\Roaming\\NuGet\\NuGet.Config"
@@ -61,6 +61,22 @@
             "Microsoft.EntityFrameworkCore.Sqlite": {
               "target": "Package",
               "version": "[8.0.10, )"
+            },
+            "Serilog.AspNetCore": {
+              "target": "Package",
+              "version": "[8.0.1, )"
+            },
+            "Serilog.Enrichers.Environment": {
+              "target": "Package",
+              "version": "[2.2.0, )"
+            },
+            "Serilog.Enrichers.Thread": {
+              "target": "Package",
+              "version": "[3.1.0, )"
+            },
+            "Serilog.Sinks.Console": {
+              "target": "Package",
+              "version": "[5.0.1, )"
             },
             "Swashbuckle.AspNetCore": {
               "target": "Package",

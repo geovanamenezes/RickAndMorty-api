@@ -3,15 +3,19 @@ using System.Threading.Channels;
 using Microsoft.Extensions.Hosting;
 using System.IO;
 using CompleteFile.UsecaseInterface;
+using Correlation.Services;
 
 
 public class QueueConsumerController : BackgroundService
 {
-    private readonly IServiceProvider _serviceProvider;
-
-    public QueueConsumerController(IServiceProvider serviceProvider)
+    private readonly IServiceProvider serviceProvider;
+    private readonly ICorrelationService correlationService;
+    private readonly ILogger<QueueConsumerController> logger;
+    public QueueConsumerController(IServiceProvider _serviceProvider, ICorrelationService _correlationService, ILogger<QueueConsumerController> _logger)
     {
-        _serviceProvider = serviceProvider;
+        serviceProvider = _serviceProvider;
+        correlationService = _correlationService;
+        logger = _logger;
     }
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
@@ -21,22 +25,21 @@ public class QueueConsumerController : BackgroundService
         {
             while (reader.TryRead(out var processId))
             {
-                using var scope = _serviceProvider.CreateScope();
+                correlationService.SetCorrelationId(Guid.Parse(processId));
+                logger.LogInformation($"Iniciando processamento do arquivo: {processId}.");
+                using var scope = serviceProvider.CreateScope();
                 var completeFileUseCase = scope.ServiceProvider.GetRequiredService<ICompleteFile>();
                 try
                 {
                     var uploadsDir = Path.Combine(Directory.GetCurrentDirectory(), "Uploads");
-                    Console.WriteLine($"uploadsDir: {uploadsDir}");
-
-                    Console.WriteLine($"[BG Service] Processando: {processId}");
+                    logger.LogInformation($"Arquivo a ser buscado para processamento: {processId}");
                     await Task.Delay(1000);
 
                     var filePath = Path.Combine(uploadsDir, processId);
-                    Console.WriteLine($"filePath: {filePath}");
 
                     if (!File.Exists(filePath))
                     {
-                        Console.WriteLine($"Arquivo nao encontrado: {processId}");
+                        logger.LogWarning($"Arquivo não encontrado: {processId}");
                         continue;
                     }
 
@@ -66,19 +69,19 @@ public class QueueConsumerController : BackgroundService
 
                     if (registros == null || !registros.Any())
                     {
-                        Console.WriteLine($"Nenhum registro válido encontrado para o arquivo {processId}.");
+                        logger.LogWarning($"Nenhum registro válido encontrado para o arquivo {processId}.");
                         continue;
                     }
                     else
                     {
                         var resultado = await completeFileUseCase.CompletaArquivo(registros, processId );
-                        Console.WriteLine($"Arquivo {processId} completado com sucesso.");
+                        logger.LogInformation($"Arquivo {processId} completado com sucesso.");
                     }
 
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine($"Erro ao processar {processId}: {ex.Message}");
+                    logger.LogError($"Erro ao processar {processId}: {ex.Message}");
                 }
             }
         }

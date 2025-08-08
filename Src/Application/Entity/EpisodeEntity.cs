@@ -1,4 +1,3 @@
-
 public class EpisodeEntity
 {
     public int Id { get; set; }

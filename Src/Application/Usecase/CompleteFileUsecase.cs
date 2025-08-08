@@ -3,23 +3,29 @@ using CompleteFile.UsecaseInterface;
 using RequestRickAndMorty.Ports;
 using RickAndMortyApi.DTOs;
 using Microsoft.EntityFrameworkCore;
+using Correlation.Services;
 
 namespace CompleteFile.Usecase;
 
 public class CompleteFileUseCase : ICompleteFile
 {
-    private readonly IUploadHistoryRepository _uploadHistoryRepository;
-
-    public CompleteFileUseCase(IUploadHistoryRepository repository)
+    private readonly IUploadHistoryRepository uploadHistoryRepository;
+    private readonly ILogger<CompleteFileUseCase> logger;
+    private readonly ICorrelationService correlationService;
+    public CompleteFileUseCase(IUploadHistoryRepository repository, ILogger<CompleteFileUseCase> _logger, ICorrelationService _correlationService)
     {
-        _uploadHistoryRepository = repository;
+        logger = _logger;
+        uploadHistoryRepository = repository;
+        correlationService = _correlationService;
     }
 
     public async Task<FileDataEntity> CompletaArquivo(List<ContentFileEntity> contentsFile, string processId)
     {
         try
         {
-            await _uploadHistoryRepository.AtualizaInicioProcessamento(processId,"EM PROCESSAMENTO", DateTime.UtcNow);
+            logger.LogInformation($"Iniciando processamento do arquivo: {processId}.");
+            logger.LogInformation($"Atualizando status do arquivo como EM PROCESSAMENTO");
+            await uploadHistoryRepository.AtualizaInicioProcessamento(processId, "EM PROCESSAMENTO", DateTime.UtcNow);
             var arquivoCompleto = new FileDataEntity
             {
                 Id = processId,
@@ -34,7 +40,7 @@ public class CompleteFileUseCase : ICompleteFile
             {
                 if (!episodeDict.TryGetValue(content.EpisodeId, out var episode))
                 {
-                    Console.WriteLine($"buscando episódio: {content.EpisodeId}");
+                    logger.LogInformation($"Buscando por episódio: {content.EpisodeId}");
                     episode = await BuscarEpisodioComPersonagens(content.EpisodeId, characterDict, locationDict);
                     episodeDict[content.EpisodeId] = episode;
                 }
@@ -50,10 +56,10 @@ public class CompleteFileUseCase : ICompleteFile
 
             PreencherTotais(arquivoCompleto, characterDict.Values.ToList());
 
-            await _uploadHistoryRepository.SalvarLocalizacoes(locationDict.Values.ToList());
-            await _uploadHistoryRepository.SalvarPersonagens(characterDict.Values.ToList());
-            await _uploadHistoryRepository.SalvarEpisodios(episodeDict.Values.ToList());
-            await _uploadHistoryRepository.SalvarResumoArquivo(arquivoCompleto);
+            await uploadHistoryRepository.SalvarLocalizacoes(locationDict.Values.ToList());
+            await uploadHistoryRepository.SalvarPersonagens(characterDict.Values.ToList());
+            await uploadHistoryRepository.SalvarEpisodios(episodeDict.Values.ToList());
+            await uploadHistoryRepository.SalvarResumoArquivo(arquivoCompleto);
 
             var characterEpisodeRelations = episodeDict.Values
                 .SelectMany(ep => ep.CharacterEpisodes ?? Enumerable.Empty<CharacterEpisodeEntity>())
@@ -61,24 +67,33 @@ public class CompleteFileUseCase : ICompleteFile
 
             var fileDataEpisodeRelations = arquivoCompleto.FileDataEpisodes.ToList();
 
-            await _uploadHistoryRepository.SalvarRelacaoPersonagemEpisodio(characterEpisodeRelations);
-            await _uploadHistoryRepository.SalvarRelacaoArquivoEpisodio(fileDataEpisodeRelations);
-            await _uploadHistoryRepository.AtualizaFimProcessamento(processId,"CONCLUÍDO COM SUCESSO", DateTime.UtcNow);
+            await uploadHistoryRepository.SalvarRelacaoPersonagemEpisodio(characterEpisodeRelations);
+            await uploadHistoryRepository.SalvarRelacaoArquivoEpisodio(fileDataEpisodeRelations);
+            logger.LogInformation($"Atualizando status do arquivo como CONCLUÍDO COM SUCESSO");
+            await uploadHistoryRepository.AtualizaFimProcessamento(processId, "CONCLUÍDO COM SUCESSO", DateTime.UtcNow);
 
             return arquivoCompleto;
         }
         catch (DbUpdateException ex)
         {
-            Console.WriteLine("Erro ao salvar na base:");
+            logger.LogError("Erro ao salvar na base:");
             Console.WriteLine(ex.InnerException?.Message);
-            await _uploadHistoryRepository.AtualizaFimProcessamento(processId,"ERRO INTERNO DURANTE O PROCESSAMENTO", DateTime.UtcNow);
+            logger.LogInformation($"Atualizando status do arquivo como ERRO - FALHA AO SALVAR DADOS");
+            await uploadHistoryRepository.AtualizaFimProcessamento(processId, "ERRO - FALHA AO SALVAR DADOS", DateTime.UtcNow);
+            throw;
+        }
+        catch (InvalidDataException ex)
+        {
+            logger.LogError($"Erro ao salvar na base: {ex.InnerException?.Message}");
+            logger.LogInformation($"Atualizando status do arquivo como ERRO - FALHA AO OBTER DADOS");
+            await uploadHistoryRepository.AtualizaFimProcessamento(processId, "ERRO - FALHA AO OBTER DADOS", DateTime.UtcNow);
             throw;
         }
         catch (Exception ex)
         {
-            Console.WriteLine("Erro no processamento do arquivo: ");
-            Console.WriteLine(ex.InnerException?.Message);
-            await _uploadHistoryRepository.AtualizaFimProcessamento(processId,"ERRO INTERNO DURANTE O PROCESSAMENTO", DateTime.UtcNow);
+            logger.LogError($"Erro no processamento do arquivo {ex.InnerException?.Message}");
+            logger.LogInformation($"Atualizando status do arquivo como ERRO INTERNO DURANTE O PROCESSAMENTO");
+            await uploadHistoryRepository.AtualizaFimProcessamento(processId, "ERRO INTERNO DURANTE O PROCESSAMENTO", DateTime.UtcNow);
             throw;
         }
     }
@@ -90,8 +105,10 @@ public class CompleteFileUseCase : ICompleteFile
     {
         var episodeTo = await RequestRickAndMortyApi.BuscarEpisodio(episodeId);
         if (episodeTo == null)
+        {
+            logger.LogError($"Falha ao obter episódio {episodeId}");
             throw new InvalidDataException($"Falha ao obter episódio {episodeId}");
-
+        }
         var episode = new EpisodeEntity
         {
             Id = episodeTo.Id,
@@ -107,7 +124,7 @@ public class CompleteFileUseCase : ICompleteFile
 
         foreach (var characterId in characterIds)
         {
-            Console.WriteLine($"buscando personagem: {characterId}");
+            logger.LogInformation($"Buscando por personagem: {characterId}");
 
             if (!characterDict.TryGetValue(characterId, out var character))
             {
@@ -138,7 +155,10 @@ public class CompleteFileUseCase : ICompleteFile
     {
         var characterTo = await RequestRickAndMortyApi.BuscarPersonagem(characterId);
         if (characterTo == null)
+        {
+            logger.LogError($"Falha ao obter personagem {characterId}");
             throw new InvalidDataException($"Falha ao obter personagem {characterId}");
+        }
 
         LocationTo? origin = null;
         if (!string.IsNullOrEmpty(characterTo.Origin?.Url))
@@ -175,7 +195,7 @@ public class CompleteFileUseCase : ICompleteFile
 
     private void PreencherTotais(FileDataEntity arquivo, List<CharacterEntity> allCharacters)
     {
-        Console.WriteLine("preenchendo totais");
+        logger.LogInformation("Preenchendo dados finais para finalizar processamento");
 
         arquivo.TotalLocations = allCharacters
             .Select(c => c.Location?.Id)

@@ -1,12 +1,16 @@
 
-namespace File.Ports;
 using UploadHistory.UsecaseInterface;
-
+using Correlation.Services;
+namespace File.Ports;
 public static class FilePorts
 {
     public static void FilePort(this WebApplication app)
     {
-        app.MapPost("/upload", async (HttpRequest request, IUploadHistory useCase) =>
+        app.MapPost("/upload", async (
+            HttpRequest request,
+            IUploadHistory useCase,
+            ILogger logger,
+            ICorrelationService correlationService) =>
         {
             try
             {
@@ -17,7 +21,10 @@ public static class FilePorts
                     return Results.BadRequest("O arquivo CSV não foi enviado ou está vazio.");
 
                 var processId = await useCase.ProcessaArquivo(file);
+                correlationService.SetCorrelationId(Guid.Parse(processId));
+                logger.LogInformation($"Recebimento do arquivo {processId} com sucesso.");
                 await IdProcessorQueue.Queue.Writer.WriteAsync(processId);
+                logger.LogInformation($"Arquivo {processId} inserido na fila para posterior processamento.");
 
                 return Results.Ok(new
                 {
@@ -28,12 +35,13 @@ public static class FilePorts
             }
             catch (InvalidDataException ex)
             {
+                logger.LogError($"Erro ao processar o arquivo: {ex.Message}");
                 return Results.BadRequest(new { error = ex.Message });
             }
             catch (Exception ex)
             {
                 var errorMessage = ex.InnerException?.Message ?? ex.Message;
-
+                logger.LogError($"Erro ao processar o arquivo: {errorMessage}");
                 return Results.Problem("Erro interno ao processar o arquivo." + errorMessage);
             }
         });
@@ -44,10 +52,14 @@ public static class FilePorts
             int? pageSize,
             string? searchTerm,
             string? orderBy,
-            IUploadHistory useCase) =>
+            IUploadHistory useCase,
+            ILogger logger,
+            ICorrelationService correlationService) =>
         {
             try
             {
+                correlationService.SetCorrelationId(Guid.Parse(processId));
+                logger.LogInformation($"Buscando dados do arquivo: {processId}");
                 var result = await useCase.RetornaDadosArquivoCompleto(processId, pageNumber, pageSize, searchTerm, orderBy);
 
                 if (result == null)
@@ -57,13 +69,15 @@ public static class FilePorts
             }
             catch (ArgumentException ex)
             {
-                return Results.BadRequest(new { erro = ex.Message });
+                var errorMessage = ex.InnerException?.Message ?? ex.Message;
+                logger.LogError($"Erro ao processar o arquivo: {errorMessage}");
+                return Results.BadRequest(new { erro = errorMessage });
 
             }
             catch (Exception ex)
             {
                 var errorMessage = ex.InnerException?.Message ?? ex.Message;
-
+                logger.LogError($"Erro ao processar o arquivo: {errorMessage}");
                 return Results.Problem("Erro interno ao processar o arquivo." + errorMessage);
             }
 

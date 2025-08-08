@@ -1,9 +1,5 @@
-using ReceivedFile.Entity;
-using ReceivedFile.Model;
-
 public static class CharacterMapper
 {
-
 public static CharacterModel ToModel(CharacterEntity entity)
 {
     return new CharacterModel

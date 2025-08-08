@@ -129,3 +129,14 @@ C:\Users\gimen\OneDrive\Documentos\projetos\rickandmorty\bin\Debug\net9.0\runtim
 C:\Users\gimen\OneDrive\Documentos\projetos\rickandmorty\bin\Debug\net9.0\runtimes\win-x64\native\e_sqlite3.dll
 C:\Users\gimen\OneDrive\Documentos\projetos\rickandmorty\bin\Debug\net9.0\runtimes\win-x86\native\e_sqlite3.dll
 C:\Users\gimen\OneDrive\Documentos\projetos\rickandmorty\obj\Debug\net9.0\RickAndMorty.sourcelink.json
+C:\Users\gimen\OneDrive\Documentos\projetos\rickandmorty\bin\Debug\net9.0\Serilog.dll
+C:\Users\gimen\OneDrive\Documentos\projetos\rickandmorty\bin\Debug\net9.0\Serilog.AspNetCore.dll
+C:\Users\gimen\OneDrive\Documentos\projetos\rickandmorty\bin\Debug\net9.0\Serilog.Enrichers.Environment.dll
+C:\Users\gimen\OneDrive\Documentos\projetos\rickandmorty\bin\Debug\net9.0\Serilog.Enrichers.Thread.dll
+C:\Users\gimen\OneDrive\Documentos\projetos\rickandmorty\bin\Debug\net9.0\Serilog.Extensions.Hosting.dll
+C:\Users\gimen\OneDrive\Documentos\projetos\rickandmorty\bin\Debug\net9.0\Serilog.Extensions.Logging.dll
+C:\Users\gimen\OneDrive\Documentos\projetos\rickandmorty\bin\Debug\net9.0\Serilog.Formatting.Compact.dll
+C:\Users\gimen\OneDrive\Documentos\projetos\rickandmorty\bin\Debug\net9.0\Serilog.Settings.Configuration.dll
+C:\Users\gimen\OneDrive\Documentos\projetos\rickandmorty\bin\Debug\net9.0\Serilog.Sinks.Console.dll
+C:\Users\gimen\OneDrive\Documentos\projetos\rickandmorty\bin\Debug\net9.0\Serilog.Sinks.Debug.dll
+C:\Users\gimen\OneDrive\Documentos\projetos\rickandmorty\bin\Debug\net9.0\Serilog.Sinks.File.dll
