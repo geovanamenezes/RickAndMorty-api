@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "53Gu+mazxXk=",
+  "dgSpecHash": "BxozsYMGWo0=",
   "success": true,
-  "projectFilePath": "C:\\Users\\gimen\\OneDrive\\Documentos\\projetos\\rickandmorty\\RickAndMorty.csproj",
+  "projectFilePath": "c:\\Users\\gimen\\OneDrive\\Documentos\\projetos\\rickandmorty\\RickAndMorty.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\gimen\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\gimen\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.7\\microsoft.aspnetcore.openapi.9.0.7.nupkg.sha512",
