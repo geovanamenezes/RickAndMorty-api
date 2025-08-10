@@ -37,10 +37,11 @@ Inclui funcionalidades como upload de arquivo CSV, validação, processamento as
 - Entity Framework Core (SQLite)
 - Serilog (logging)
 - Docker
+- Azure
 
 ---
 
-## Como executar (Docker)
+## Como executar localmente (Docker)
 
 ### Build da imagem
 ```bash
@@ -76,6 +77,7 @@ Regras:
 ---
 
 ## Endpoints / Rotas
+O serviço está publicado na Azure, e pode ser chamado via API REST, seguem rotas:
 
 ### POST /upload
 Faz upload do arquivo CSV (multipart/form-data).
@@ -83,7 +85,7 @@ Faz upload do arquivo CSV (multipart/form-data).
 **Request (curl - exemplo Windows)**
 ```bash
 curl --request POST \
-  --url http://localhost:5164/upload/ \
+  --url https://integration-rickandmorty-api-hcbubthratdde4aw.brazilsouth-01.azurewebsites.net/upload/ \
   --header 'content-type: multipart/form-data' \
   --form 'file=@/caminho/para/arquivo.csv'
 ```
@@ -112,7 +114,7 @@ Consulta o status do processamento do arquivo.
 **Request (curl)**
 ```bash
 curl --request GET \
-  --url http://localhost:5164/status/0227fe39-e271-4c4a-b21f-7ddd52bc48ca
+  --url https://integration-rickandmorty-api-hcbubthratdde4aw.brazilsouth-01.azurewebsites.net/status/0227fe39-e271-4c4a-b21f-7ddd52bc48ca
 ```
 
 **Response (200 OK) — Exemplo**
@@ -145,7 +147,7 @@ Retorna os dados processados referentes ao `processId`. Suporta paginação via 
 **Request (curl)**
 ```bash
 curl --request GET \
-  --url 'http://localhost:5164/upload/0227fe39-e271-4c4a-b21f-7ddd52bc48ca?pageNumber=1&pageSize=1'
+  --url 'https://integration-rickandmorty-api-hcbubthratdde4aw.brazilsouth-01.azurewebsites.net/upload/0227fe39-e271-4c4a-b21f-7ddd52bc48ca?pageNumber=1&pageSize=1'
 ```
 
 **Resposta (200 OK) — Exemplo**
@@ -215,9 +217,8 @@ curl --request GET \
 
 ## Estrutura de pastas importante
 
-- `./data` — pasta mapeada para o SQLite (host ↔ container).
 - `./Uploads` — local (no container) onde os arquivos CSV são armazenados temporariamente.
-- `./src` — código-fonte (UseCases, Ports, Adapters, Controllers/Endpoints).
+- `./Src` — código-fonte (UseCases, Ports, Adapters, Controllers/Endpoints).
 - `Dockerfile` — imagem multi-stage (build + runtime).
 
 ---
