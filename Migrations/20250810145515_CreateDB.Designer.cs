@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace RickAndMorty.Migrations
 {
     [DbContext(typeof(UploadHistoryContext))]
-    [Migration("20250808171723_Create")]
-    partial class Create
+    [Migration("20250810145515_CreateDB")]
+    partial class CreateDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

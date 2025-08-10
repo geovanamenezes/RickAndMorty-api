@@ -1,8 +1,13 @@
-﻿
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using ReceivedFile.Model;
+
 public class UploadHistoryContext : DbContext
 {
+    public UploadHistoryContext(DbContextOptions<UploadHistoryContext> options)
+        : base(options)
+    {
+    }
+
     public DbSet<ReceivedFileModel> UploadHistory { get; set; }
     public DbSet<CharacterModel> Character { get; set; }
     public DbSet<FileDataModel> FileData { get; set; }
@@ -11,27 +16,16 @@ public class UploadHistoryContext : DbContext
     public DbSet<FileDataEpisodeModel> FileDataEpisode { get; set; }
     public DbSet<CharacterEpisodeModel> CharacterEpisode { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-    {
-        optionsBuilder.UseSqlite("Data Source=Database/DbRickAndMorty.sqlite");
-        base.OnConfiguring(optionsBuilder);
-    }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
 
         // chaves primárias
-        modelBuilder.Entity<EpisodeModel>()
-            .HasKey(e => e.Id);
-        modelBuilder.Entity<CharacterModel>()
-            .HasKey(c => c.Id);
-        modelBuilder.Entity<FileDataModel>()
-            .HasKey(e => e.Id);
-        modelBuilder.Entity<LocationModel>()
-            .HasKey(l => l.Id);
-        modelBuilder.Entity<ReceivedFileModel>()
-            .HasKey(r => r.Id);
+        modelBuilder.Entity<EpisodeModel>().HasKey(e => e.Id);
+        modelBuilder.Entity<CharacterModel>().HasKey(c => c.Id);
+        modelBuilder.Entity<FileDataModel>().HasKey(e => e.Id);
+        modelBuilder.Entity<LocationModel>().HasKey(l => l.Id);
+        modelBuilder.Entity<ReceivedFileModel>().HasKey(r => r.Id);
 
         // chaves estrangeiras
         modelBuilder.Entity<CharacterModel>()
@@ -72,27 +66,12 @@ public class UploadHistoryContext : DbContext
             .WithMany(e => e.CharacterEpisodes)
             .HasForeignKey(ce => ce.EpisodeId);
 
-
-        // indices
-        modelBuilder.Entity<CharacterEpisodeModel>()
-            .HasIndex(ce => ce.CharacterId);
-
-        modelBuilder.Entity<CharacterEpisodeModel>()
-            .HasIndex(ce => ce.EpisodeId);
-
-        modelBuilder.Entity<FileDataEpisodeModel>()
-            .HasIndex(fde => fde.FileDataId);
-
-        modelBuilder.Entity<FileDataEpisodeModel>()
-            .HasIndex(fde => fde.EpisodeId);
-
-        modelBuilder.Entity<CharacterModel>()
-            .HasIndex(c => c.OriginId);
-
-        modelBuilder.Entity<CharacterModel>()
-            .HasIndex(c => c.LocationId);
-
-
-
+        // índices
+        modelBuilder.Entity<CharacterEpisodeModel>().HasIndex(ce => ce.CharacterId);
+        modelBuilder.Entity<CharacterEpisodeModel>().HasIndex(ce => ce.EpisodeId);
+        modelBuilder.Entity<FileDataEpisodeModel>().HasIndex(fde => fde.FileDataId);
+        modelBuilder.Entity<FileDataEpisodeModel>().HasIndex(fde => fde.EpisodeId);
+        modelBuilder.Entity<CharacterModel>().HasIndex(c => c.OriginId);
+        modelBuilder.Entity<CharacterModel>().HasIndex(c => c.LocationId);
     }
 }

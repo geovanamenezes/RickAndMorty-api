@@ -2,12 +2,12 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 
 WORKDIR /app
 
-COPY *.csproj ./
 COPY *.sln ./
+COPY **/*.csproj ./
 
 RUN dotnet restore
 
-COPY . ./
+COPY . .
 
 RUN dotnet publish -c Release -o out
 
@@ -20,8 +20,7 @@ WORKDIR /app
 COPY --from=build /app/out .
 
 RUN mkdir -p /app/Database
-
-COPY --from=build /app/Database/ ./Database/
+RUN chmod 777 /app/Database
 
 EXPOSE 5164
 
