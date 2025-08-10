@@ -1,0 +1,11 @@
+version: '3.8'
+
+services:
+  rickandmorty-api:
+    build: .
+    container_name: rickandmorty-api
+    ports:
+      - "5164:5164"
+    volumes:
+      - ./Database:/app/Database
+    restart: unless-stopped

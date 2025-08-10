@@ -1,25 +1,32 @@
 {
   "format": 1,
   "restore": {
-    "c:\\Users\\gimen\\OneDrive\\Documentos\\projetos\\rickandmorty\\RickAndMorty.csproj": {}
+    "C:\\Users\\gimen\\OneDrive\\Documentos\\projetos\\rickandmorty\\RickAndMorty.csproj": {}
   },
   "projects": {
-    "c:\\Users\\gimen\\OneDrive\\Documentos\\projetos\\rickandmorty\\RickAndMorty.csproj": {
+    "C:\\Users\\gimen\\OneDrive\\Documentos\\projetos\\rickandmorty\\RickAndMorty.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "c:\\Users\\gimen\\OneDrive\\Documentos\\projetos\\rickandmorty\\RickAndMorty.csproj",
+        "projectUniqueName": "C:\\Users\\gimen\\OneDrive\\Documentos\\projetos\\rickandmorty\\RickAndMorty.csproj",
         "projectName": "RickAndMorty",
-        "projectPath": "c:\\Users\\gimen\\OneDrive\\Documentos\\projetos\\rickandmorty\\RickAndMorty.csproj",
+        "projectPath": "C:\\Users\\gimen\\OneDrive\\Documentos\\projetos\\rickandmorty\\RickAndMorty.csproj",
         "packagesPath": "C:\\Users\\gimen\\.nuget\\packages\\",
-        "outputPath": "c:\\Users\\gimen\\OneDrive\\Documentos\\projetos\\rickandmorty\\obj\\",
+        "outputPath": "C:\\Users\\gimen\\OneDrive\\Documentos\\projetos\\rickandmorty\\obj\\",
         "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
         "configFilePaths": [
-          "C:\\Users\\gimen\\AppData\\Roaming\\NuGet\\NuGet.Config"
+          "C:\\Users\\gimen\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
         "originalTargetFrameworks": [
           "net9.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+          "C:\\Program Files\\dotnet\\library-packs": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
