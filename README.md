@@ -1,4 +1,4 @@
-# Projeto Rick and Morty - Clean Architecture
+# Integração API Rick And Morty
 
 Este projeto implementa uma API em .NET 9 (Minimal APIs) com SQLite, seguindo princípios de **Clean Architecture**.  
 Inclui funcionalidades como upload de arquivo CSV, validação, processamento assíncrono, persistência em SQLite e integração com a API pública do Rick and Morty.
