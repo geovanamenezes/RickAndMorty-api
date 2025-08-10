@@ -10,7 +10,6 @@ Inclui funcionalidades como upload de arquivo CSV, validação, processamento as
 - [Funcionalidades](#funcionalidades)
 - [Tecnologias](#tecnologias)
 - [Como executar (Docker)](#como-executar-docker)
-- [Configuração do banco (SQLite)](#configuração-do-banco-sqlite)
 - [Formato do arquivo CSV](#formato-do-arquivo-csv)
 - [Endpoints / Rotas](#endpoints--rotas)
   - [POST /upload](#post-upload)
@@ -20,8 +19,6 @@ Inclui funcionalidades como upload de arquivo CSV, validação, processamento as
 - [Códigos de status do processamento](#códigos-de-status-do-processamento)
 - [Arquitetura (diagrama Mermaid)](#arquitetura-diagrama-mermaid)
 - [Estrutura de pastas importante](#estrutura-de-pastas-importante)
-- [Licença](#licença)
-
 ---
 
 ## Funcionalidades
