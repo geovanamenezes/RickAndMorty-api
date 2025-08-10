@@ -17,7 +17,6 @@ Inclui funcionalidades como upload de arquivo CSV, validação, processamento as
   - [GET /upload/{processId}](#get-uploadprocessid)
 - [Regras de paginação](#regras-de-paginação)
 - [Códigos de status do processamento](#códigos-de-status-do-processamento)
-- [Arquitetura (diagrama Mermaid)](#arquitetura-diagrama-mermaid)
 - [Estrutura de pastas importante](#estrutura-de-pastas-importante)
 ---
 
@@ -213,19 +212,6 @@ curl --request GET \
 - `ERRO INTERNO DURANTE O PROCESSAMENTO` — exceptions ou problemas não categorizados.
 
 ---
-
-## Arquitetura (diagrama Mermaid)
-
-```mermaid
-flowchart LR
-    Client[Client / Usuario] -->|POST CSV| API[API - Minimal API (.NET 9)]
-    API --> Queue[Port (fila) - envia processId]
-    Queue --> Worker[Worker / Background Service]
-    Worker --> RickAPI[External: Rick & Morty API]
-    Worker --> DB[SQLite (/data/DbRickAndMorty.sqlite)]
-    API -->|GET status| StatusStore[(Upload Status Repository)]
-    API -->|GET data| Repository[Repository -> SQLite]
-```
 
 ## Estrutura de pastas importante
 
